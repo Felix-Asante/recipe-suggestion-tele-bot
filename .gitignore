@@ -1,2 +1,6 @@
-.env
-./bin/
+.idea
+.debug
+.vscode
+.env*
+coverage.txt
+bin/
