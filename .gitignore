@@ -3,4 +3,4 @@
 .vscode
 .env*
 coverage.txt
-bin/
+bin
