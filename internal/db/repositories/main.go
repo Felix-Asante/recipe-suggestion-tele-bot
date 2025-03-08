@@ -21,10 +21,19 @@ type Repositories struct {
 		RemoveByChatId(chatId int64) error
 		Remove(id int) error
 	}
+	DietPreference interface {
+		FindByUserId(userId int64) ([]DietPreference, error)
+		Create(data []*DietPreference) error
+		Save(preference *DietPreference) (*DietPreference, error)
+		Remove(id int) error
+		RemoveByUserId(userId int64) error
+	}
 }
 
 func NewRepositories(db *gorm.DB) *Repositories {
 	return &Repositories{
-		User:     NewUserRepository(db),
-		BotState: NewBotStateRepository(db)}
+		User:           NewUserRepository(db),
+		BotState:       NewBotStateRepository(db),
+		DietPreference: NewDietPreferenceRepository(db),
+	}
 }

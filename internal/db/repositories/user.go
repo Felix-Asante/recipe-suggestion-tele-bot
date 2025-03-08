@@ -16,6 +16,8 @@ type User struct {
 	UserId    int64      `gorm:"column:user_id;unique;not null" json:"user_id"`
 	CreatedAt time.Time  `gorm:"column:created_at;not null" json:"created_at"`
 	UpdatedAt *time.Time `gorm:"column:updated_at;not null" json:"updated_at"`
+
+	DietPreferences []DietPreference `gorm:"foreignKey:UserId;references:UserId"`
 }
 
 type UserRepository struct {

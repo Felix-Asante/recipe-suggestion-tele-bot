@@ -8,6 +8,7 @@ import (
 
 	"github.com/Felix-Asante/recipe-suggestion-tele-bot/internal/botStates"
 	"github.com/Felix-Asante/recipe-suggestion-tele-bot/internal/db/dto"
+	"github.com/Felix-Asante/recipe-suggestion-tele-bot/internal/db/repositories"
 	"github.com/Felix-Asante/recipe-suggestion-tele-bot/internal/messages"
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
@@ -45,12 +46,47 @@ func (app *application) dietHandler(ctx context.Context, b *bot.Bot, update *mod
 
 func (app *application) handleDietPreference(ctx context.Context, b *bot.Bot, update *models.Update) {
 	preferences := update.Message.Text
+	userId := update.Message.From.ID
 	preferenceList, invalidPreferences := extractPreferences(preferences)
+
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered from panic:", r)
+			b.SendMessage(ctx, &bot.SendMessageParams{
+				ChatID:    update.Message.Chat.ID,
+				Text:      messages.SomethingWentWrong,
+				ParseMode: models.ParseModeMarkdownV1,
+			})
+		}
+	}()
 
 	// save preferences
 	if len(preferenceList) > 0 {
-		fmt.Println("Preferences:", preferenceList)
+		dietPreference := make([]*repositories.DietPreference, 0)
+		for _, preference := range preferenceList {
+			dietPreference = append(dietPreference, &repositories.DietPreference{
+				UserId:     userId,
+				Preference: preference,
+			})
+		}
 
+		if err := app.repositories.DietPreference.Create(dietPreference); nil != err {
+			b.SendMessage(ctx, &bot.SendMessageParams{
+				ChatID:    update.Message.Chat.ID,
+				Text:      messages.SomethingWentWrong,
+				ParseMode: models.ParseModeMarkdownV1,
+			})
+			return
+		}
+	}
+
+	if err := app.repositories.BotState.RemoveByChatId(update.Message.Chat.ID); nil != err {
+		b.SendMessage(ctx, &bot.SendMessageParams{
+			ChatID:    update.Message.Chat.ID,
+			Text:      messages.SomethingWentWrong,
+			ParseMode: models.ParseModeMarkdownV1,
+		})
+		return
 	}
 
 	// send success message with invalid preferences
