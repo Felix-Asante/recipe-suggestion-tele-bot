@@ -13,7 +13,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := db.AutoMigrate(&repositories.User{}); err != nil {
+	if err := db.AutoMigrate(&repositories.User{}, &repositories.BotState{}); err != nil {
 		log.Fatal(err)
 	}
 }

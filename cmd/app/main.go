@@ -16,6 +16,8 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
+var app *application
+
 func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
@@ -39,14 +41,12 @@ func main() {
 		URL: env.GetString("APP_URL", ""),
 	})
 
-	db, err := db.New()
-	if nil != err {
-		log.Fatal(err)
+	var appErr error
+
+	app, appErr = createApp(b)
+	if nil != appErr {
+		log.Fatal(appErr)
 	}
-
-	repositories := repositories.NewRepositories(db)
-
-	app := &application{bot: b, repositories: repositories}
 
 	app.run()
 
@@ -58,10 +58,22 @@ func main() {
 
 }
 
+func createApp(b *bot.Bot) (*application, error) {
+	db, err := db.New()
+	if nil != err {
+		return nil, err
+	}
+
+	repositories := repositories.NewRepositories(db)
+
+	app := &application{bot: b, repositories: repositories}
+
+	return app, nil
+}
+
+// bot default handler
 func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	// b.SendMessage(ctx, &bot.SendMessageParams{
-	// 	ChatID:    update.Message.Chat.ID,
-	// 	Text:      "Hello, World!",
-	// 	ParseMode: models.ParseModeMarkdown,
-	// })
+
+	app.handleState(ctx, b, update)
+
 }

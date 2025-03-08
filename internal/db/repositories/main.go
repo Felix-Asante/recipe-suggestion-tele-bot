@@ -13,8 +13,18 @@ type Repositories struct {
 		Create(data dto.CreateUserDto) (*User, error)
 		Save(user *User) (*User, error)
 	}
+	BotState interface {
+		FindByChatId(chatId int64) (*BotState, error)
+		Create(data dto.CreateBotStateDto) (*BotState, error)
+		Upsert(data dto.CreateBotStateDto) (*BotState, error)
+		Save(state *BotState) (*BotState, error)
+		RemoveByChatId(chatId int64) error
+		Remove(id int) error
+	}
 }
 
 func NewRepositories(db *gorm.DB) *Repositories {
-	return &Repositories{User: NewUserRepository(db)}
+	return &Repositories{
+		User:     NewUserRepository(db),
+		BotState: NewBotStateRepository(db)}
 }

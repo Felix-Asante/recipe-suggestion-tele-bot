@@ -1,8 +1,8 @@
 package messages
 
-const WelcomeText = `* 🍳 Welcome to PantryPal! 🥗*
+const WelcomeText = `* 🍳 Welcome to RecipePal! 🥗*
 
-Hello %s! I'm PantryPal, your personal recipe assistant built to turn your available ingredients into delicious meals. No more staring at your fridge wondering what to cook!
+Hello %s! I'm RecipePal, your personal recipe assistant built to turn your available ingredients into delicious meals. No more staring at your fridge wondering what to cook!
 
 * 🌟 What I Can Do For You *
 
@@ -36,3 +36,25 @@ Here are some commands to help you navigate:
 👉 /help - Get more detailed instructions
 
 I'm excited to help you discover new culinary creations! What would you like to cook today?`
+
+const SetDietaryPreference = `*Dietary Preferences* 🥦
+
+Tell me your dietary preferences by listing them separated by commas:
+
+Example: vegetarian, gluten-free, dairy-free
+
+Your preferences help me find recipes that match your needs!`
+
+const SomethingWentWrong = `**Oops!** It looks like something went wrong on our end. We couldn't process your request at the moment. Please try again later. Thank you for your patience!`
+
+const DietaryPreferencesSaved = `Great! We've saved your dietary preferences! 🍽️🥦 
+
+Feel free to update them anytime! 😊`
+
+const DietaryPreferenceSavedWithoutInvalid = `🎉 Great! We've saved your dietary preferences! 🍽️  
+
+However, we noticed a few options that were invalid (%s) and couldn't be saved. 🚫  
+
+Feel free to update them anytime! 😊  `
+
+const InvalidDietaryPreference = `We noticed a few options that were invalid (%s) and couldn't be saved. 🚫  `
