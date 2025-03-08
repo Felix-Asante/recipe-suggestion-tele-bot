@@ -43,6 +43,7 @@ func main() {
 	if nil != err {
 		log.Fatal(err)
 	}
+
 	repositories := repositories.NewRepositories(db)
 
 	app := &application{bot: b, repositories: repositories}
