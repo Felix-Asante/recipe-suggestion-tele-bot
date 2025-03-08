@@ -1,0 +1,12 @@
+# Go build output
+bin/
+
+# Git metadata
+.git/
+.gitignore
+
+# Sensitive configuration
+*.env
+.example.env
+
+.air.toml
