@@ -3,12 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 
 	"os"
 	"os/signal"
 
 	"github.com/Felix-Asante/recipe-suggestion-tele-bot/internal/db"
+	"github.com/Felix-Asante/recipe-suggestion-tele-bot/internal/db/repositories"
 	"github.com/Felix-Asante/recipe-suggestion-tele-bot/internal/env"
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
@@ -37,9 +39,13 @@ func main() {
 		URL: env.GetString("APP_URL", ""),
 	})
 
-	storage := db.NewStorage()
+	db, err := db.New()
+	if nil != err {
+		log.Fatal(err)
+	}
+	repositories := repositories.NewRepositories(db)
 
-	app := &application{bot: b, storage: storage}
+	app := &application{bot: b, repositories: repositories}
 
 	app.run()
 

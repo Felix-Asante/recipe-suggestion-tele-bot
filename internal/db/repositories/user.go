@@ -1,13 +1,15 @@
-package db
+package repositories
+
+import "gorm.io/gorm"
 
 type User struct {
 }
 
 type UserRepository struct {
-	db any
+	db *gorm.DB
 }
 
-func NewUserRepository(db any) *UserRepository {
+func NewUserRepository(db *gorm.DB) *UserRepository {
 	return &UserRepository{db: db}
 }
 
