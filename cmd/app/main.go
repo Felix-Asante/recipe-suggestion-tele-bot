@@ -34,7 +34,7 @@ func main() {
 	}
 
 	b.SetWebhook(ctx, &bot.SetWebhookParams{
-		URL: "https://d22b-105-75-42-201.ngrok-free.app",
+		URL: env.GetString("APP_URL", ""),
 	})
 
 	storage := db.NewStorage()
