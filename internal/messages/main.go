@@ -19,7 +19,6 @@ Here are some commands to help you navigate:
 - /start - Show this welcome message
 - /findrecipe - Search recipes with your ingredients
 - /pantry - Manage your saved ingredient list
-- /favorites - View your saved recipes
 - /diet - Set dietary preferences (vegetarian, gluten-free, etc.)
 - /mealplan - Generate a weekly meal plan
 - /help - Get detailed instructions

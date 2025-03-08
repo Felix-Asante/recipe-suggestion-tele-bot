@@ -41,7 +41,7 @@ func (r *UserRepository) FindByUserId(userId int64) (*User, error) {
 func (r *UserRepository) Upsert(data dto.CreateUserDto) error {
 	user, error := r.FindByUserId(data.UserId)
 
-	if user == nil || errors.Is(error, gorm.ErrRecordNotFound) {
+	if errors.Is(error, gorm.ErrRecordNotFound) {
 		if _, err := r.Create(data); err != nil {
 			return err
 		}

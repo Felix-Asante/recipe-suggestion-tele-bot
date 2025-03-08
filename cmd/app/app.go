@@ -14,6 +14,15 @@ type application struct {
 
 func (app *application) run() {
 	fmt.Println("Telegram bot started")
+	app.registerHandlers()
 
+}
+
+func (app *application) registerHandlers() {
 	app.bot.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, app.startHandler)
+	app.bot.RegisterHandler(bot.HandlerTypeMessageText, "/findrecipe", bot.MatchTypeExact, app.findRecipesHandler)
+	app.bot.RegisterHandler(bot.HandlerTypeMessageText, "/pantry", bot.MatchTypeExact, app.pantryHandler)
+	app.bot.RegisterHandler(bot.HandlerTypeMessageText, "/diet", bot.MatchTypeExact, app.dietHandler)
+	app.bot.RegisterHandler(bot.HandlerTypeMessageText, "/mealplan", bot.MatchTypeExact, app.mealPlanHandler)
+	app.bot.RegisterHandler(bot.HandlerTypeMessageText, "/help", bot.MatchTypeExact, app.helpHandler)
 }
