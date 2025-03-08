@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"os"
@@ -17,6 +18,12 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered from panic:", r)
+		}
+	}()
+
 	opts := []bot.Option{
 		bot.WithDefaultHandler(handler),
 	}
@@ -27,8 +34,14 @@ func main() {
 	}
 
 	b.SetWebhook(ctx, &bot.SetWebhookParams{
-		URL: "https://example.com/webhook",
+		URL: "https://d22b-105-75-42-201.ngrok-free.app",
 	})
+
+	storage := db.NewStorage()
+
+	app := &application{bot: b, storage: storage}
+
+	app.run()
 
 	go func() {
 		http.ListenAndServe(env.GetString("PORT", ":2000"), b.WebhookHandler())
@@ -39,9 +52,9 @@ func main() {
 }
 
 func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	storage := db.NewStorage()
-
-	app := &application{bot: b, storage: storage}
-
-	app.run()
+	// b.SendMessage(ctx, &bot.SendMessageParams{
+	// 	ChatID:    update.Message.Chat.ID,
+	// 	Text:      "Hello, World!",
+	// 	ParseMode: models.ParseModeMarkdown,
+	// })
 }
