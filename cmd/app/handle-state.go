@@ -13,12 +13,16 @@ import (
 )
 
 func (app *application) handleState(ctx context.Context, b *bot.Bot, update *models.Update) {
-
-	chatState, err := app.repositories.BotState.FindByChatId(update.Message.Chat.ID)
+	fmt.Println(update.CallbackQuery.Data)
+	if update.Message == nil {
+		return
+	}
+	chatId := update.Message.Chat.ID
+	chatState, err := app.repositories.BotState.FindByChatId(chatId)
 
 	if nil != err && !errors.Is(err, gorm.ErrRecordNotFound) {
 		b.SendMessage(ctx, &bot.SendMessageParams{
-			ChatID:    update.Message.Chat.ID,
+			ChatID:    chatId,
 			Text:      messages.SomethingWentWrong,
 			ParseMode: models.ParseModeMarkdownV1,
 		})

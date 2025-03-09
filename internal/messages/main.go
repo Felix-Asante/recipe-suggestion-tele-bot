@@ -37,6 +37,8 @@ Here are some commands to help you navigate:
 
 I'm excited to help you discover new culinary creations! What would you like to cook today?`
 
+const DietaryPreferenceButtonText = `*Dietary Preferences*`
+
 const SetDietaryPreference = `*Dietary Preferences* 🥦
 
 Tell me your dietary preferences by listing them separated by commas:

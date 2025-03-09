@@ -41,6 +41,10 @@ func main() {
 		URL: env.GetString("APP_URL", ""),
 	})
 
+	if _, err := setCommands(ctx, b); nil != err {
+		log.Fatal(err)
+	}
+
 	var appErr error
 
 	app, appErr = createApp(b)
@@ -69,6 +73,37 @@ func createApp(b *bot.Bot) (*application, error) {
 	app := &application{bot: b, repositories: repositories}
 
 	return app, nil
+}
+
+func setCommands(ctx context.Context, b *bot.Bot) (bool, error) {
+	return b.SetMyCommands(ctx, &bot.SetMyCommandsParams{
+		Commands: []models.BotCommand{
+			{
+				Command:     "/start",
+				Description: "Show welcome message",
+			},
+			{
+				Command:     "/findrecipe",
+				Description: "Search recipes with your ingredients",
+			},
+			{
+				Command:     "/pantry",
+				Description: "Manage your saved ingredient list",
+			},
+			{
+				Command:     "/diet",
+				Description: "Set dietary preferences",
+			},
+			{
+				Command:     "/mealplan",
+				Description: "Generate a weekly meal plan",
+			},
+			{
+				Command:     "/help",
+				Description: "Get detailed instructions",
+			},
+		},
+	})
 }
 
 // bot default handler

@@ -15,6 +15,21 @@ import (
 )
 
 func (app *application) dietHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	userId := update.Message.From.ID
+	dietPreferences, err := app.repositories.DietPreference.FindByUserId(userId)
+	fmt.Println(dietPreferences)
+	if nil != err {
+		b.SendMessage(ctx, &bot.SendMessageParams{
+			ChatID:    update.Message.Chat.ID,
+			Text:      messages.SomethingWentWrong,
+			ParseMode: models.ParseModeMarkdownV1,
+		})
+		return
+	}
+	if len(dietPreferences) > 0 {
+		app.showDietaryPreference(ctx, b, update, dietPreferences)
+		return
+	}
 
 	createStateDto := dto.CreateBotStateDto{
 		ChatId: update.Message.Chat.ID,
@@ -42,6 +57,43 @@ func (app *application) dietHandler(ctx context.Context, b *bot.Bot, update *mod
 		})
 		return
 	}
+}
+
+func (app *application) showDietaryPreference(ctx context.Context, b *bot.Bot, update *models.Update, dietPreferences []repositories.DietPreference) {
+	buttons := make([][]models.InlineKeyboardButton, 0)
+	for _, preference := range dietPreferences {
+		buttons = append(buttons, []models.InlineKeyboardButton{
+			{
+				Text:         preference.Preference,
+				CallbackData: fmt.Sprintf("edit_diet_preference_%s", preference.Preference),
+			},
+			{
+				Text:         "🗑️ Delete",
+				CallbackData: fmt.Sprintf("delete_diet_preference_%s", preference.Id.String()),
+			},
+		})
+	}
+
+	markup := &models.InlineKeyboardMarkup{
+		InlineKeyboard: buttons,
+	}
+
+	messageParams := &bot.SendMessageParams{
+		ChatID:      update.Message.Chat.ID,
+		Text:        messages.DietaryPreferenceButtonText,
+		ParseMode:   models.ParseModeMarkdownV1,
+		ReplyMarkup: markup,
+	}
+	if _, err := b.SendMessage(ctx, messageParams); nil != err {
+		fmt.Println(err)
+		b.SendMessage(ctx, &bot.SendMessageParams{
+			ChatID:    update.Message.Chat.ID,
+			Text:      messages.SomethingWentWrong,
+			ParseMode: models.ParseModeMarkdownV1,
+		})
+		return
+	}
+
 }
 
 func (app *application) handleDietPreference(ctx context.Context, b *bot.Bot, update *models.Update) {
