@@ -17,7 +17,7 @@ import (
 func (app *application) dietHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	userId := update.Message.From.ID
 	dietPreferences, err := app.repositories.DietPreference.FindByUserId(userId)
-	fmt.Println(dietPreferences)
+
 	if nil != err {
 		b.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID:    update.Message.Chat.ID,
@@ -31,6 +31,11 @@ func (app *application) dietHandler(ctx context.Context, b *bot.Bot, update *mod
 		return
 	}
 
+	app.setWaitingForDietPreference(ctx, b, update)
+
+}
+
+func (app *application) setWaitingForDietPreference(ctx context.Context, b *bot.Bot, update *models.Update) {
 	createStateDto := dto.CreateBotStateDto{
 		ChatId: update.Message.Chat.ID,
 		State:  botStates.WaitingForDietPreference,
