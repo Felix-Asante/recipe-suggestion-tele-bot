@@ -10,6 +10,7 @@ import (
 	"github.com/Felix-Asante/recipe-suggestion-tele-bot/internal/db/dto"
 	"github.com/Felix-Asante/recipe-suggestion-tele-bot/internal/db/repositories"
 	"github.com/Felix-Asante/recipe-suggestion-tele-bot/internal/messages"
+	"github.com/Felix-Asante/recipe-suggestion-tele-bot/internal/utils"
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 )
@@ -36,11 +37,12 @@ func (app *application) dietHandler(ctx context.Context, b *bot.Bot, update *mod
 }
 
 func (app *application) setWaitingForDietPreference(ctx context.Context, b *bot.Bot, update *models.Update) {
+	defer utils.RecoverFromPanic()
 	createStateDto := dto.CreateBotStateDto{
 		ChatId: update.Message.Chat.ID,
 		State:  botStates.WaitingForDietPreference,
 	}
-	if _, err := app.repositories.BotState.Upsert(createStateDto); nil != err {
+	if err := app.repositories.BotState.Upsert(createStateDto); nil != err {
 		b.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID:    update.Message.Chat.ID,
 			Text:      messages.SomethingWentWrong,
@@ -70,14 +72,21 @@ func (app *application) showDietaryPreference(ctx context.Context, b *bot.Bot, u
 		buttons = append(buttons, []models.InlineKeyboardButton{
 			{
 				Text:         preference.Preference,
-				CallbackData: fmt.Sprintf("edit_diet_preference_%s", preference.Preference),
+				CallbackData: fmt.Sprintf("edit_diet-preference_%s", preference.Preference),
 			},
 			{
 				Text:         "🗑️ Delete",
-				CallbackData: fmt.Sprintf("delete_diet_preference_%s", preference.Id.String()),
+				CallbackData: fmt.Sprintf("delete_diet-preference_%s", preference.Id.String()),
 			},
 		})
 	}
+
+	buttons = append(buttons, []models.InlineKeyboardButton{
+		{
+			Text:         "Add new preference",
+			CallbackData: "add_diet-preference_btn",
+		},
+	})
 
 	markup := &models.InlineKeyboardMarkup{
 		InlineKeyboard: buttons,
@@ -90,7 +99,6 @@ func (app *application) showDietaryPreference(ctx context.Context, b *bot.Bot, u
 		ReplyMarkup: markup,
 	}
 	if _, err := b.SendMessage(ctx, messageParams); nil != err {
-		fmt.Println(err)
 		b.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID:    update.Message.Chat.ID,
 			Text:      messages.SomethingWentWrong,
@@ -102,20 +110,10 @@ func (app *application) showDietaryPreference(ctx context.Context, b *bot.Bot, u
 }
 
 func (app *application) handleDietPreference(ctx context.Context, b *bot.Bot, update *models.Update) {
+	defer utils.RecoverFromPanic()
 	preferences := update.Message.Text
 	userId := update.Message.From.ID
 	preferenceList, invalidPreferences := extractPreferences(preferences)
-
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Println("Recovered from panic:", r)
-			b.SendMessage(ctx, &bot.SendMessageParams{
-				ChatID:    update.Message.Chat.ID,
-				Text:      messages.SomethingWentWrong,
-				ParseMode: models.ParseModeMarkdownV1,
-			})
-		}
-	}()
 
 	// save preferences
 	if len(preferenceList) > 0 {
@@ -162,6 +160,40 @@ func (app *application) handleDietPreference(ctx context.Context, b *bot.Bot, up
 		return
 	}
 
+}
+
+func (app *application) handleDeleteDietPreference(ctx context.Context, b *bot.Bot, update *models.Update) {
+	defer utils.RecoverFromPanic()
+	query := update.CallbackQuery.Data
+	from := update.CallbackQuery.From
+
+	parts := strings.Split(query, "_")
+
+	preferenceId := parts[2]
+
+	if err := app.repositories.DietPreference.Remove(preferenceId); nil != err {
+		b.AnswerCallbackQuery(ctx, &bot.AnswerCallbackQueryParams{
+			CallbackQueryID: update.CallbackQuery.ID,
+			Text:            messages.FailedToGetResponse,
+		})
+		return
+	}
+
+	b.AnswerCallbackQuery(ctx, &bot.AnswerCallbackQueryParams{
+		CallbackQueryID: update.CallbackQuery.ID,
+		Text:            messages.DietaryPreferenceDeleted,
+	})
+
+	message := update.CallbackQuery.Message.Message
+
+	newUpdate := &models.Update{
+		Message: &models.Message{
+			Chat: message.Chat,
+			From: &from,
+		},
+	}
+
+	app.dietHandler(ctx, b, newUpdate)
 }
 
 func getMessage(invalidPreferences []string, preferenceList []string) string {

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -12,6 +11,7 @@ import (
 	"github.com/Felix-Asante/recipe-suggestion-tele-bot/internal/db"
 	"github.com/Felix-Asante/recipe-suggestion-tele-bot/internal/db/repositories"
 	"github.com/Felix-Asante/recipe-suggestion-tele-bot/internal/env"
+	"github.com/Felix-Asante/recipe-suggestion-tele-bot/internal/utils"
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 )
@@ -22,11 +22,7 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Println("Recovered from panic:", r)
-		}
-	}()
+	defer utils.RecoverFromPanic()
 
 	opts := []bot.Option{
 		bot.WithDefaultHandler(handler),

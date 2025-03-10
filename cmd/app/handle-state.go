@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/Felix-Asante/recipe-suggestion-tele-bot/internal/botStates"
 	"github.com/Felix-Asante/recipe-suggestion-tele-bot/internal/messages"
@@ -13,7 +14,10 @@ import (
 )
 
 func (app *application) handleState(ctx context.Context, b *bot.Bot, update *models.Update) {
-	fmt.Println(update.CallbackQuery.Data)
+	if update.CallbackQuery != nil {
+		app.handleCallbackQuery(ctx, b, update)
+		return
+	}
 	if update.Message == nil {
 		return
 	}
@@ -40,5 +44,38 @@ func (app *application) handleState(ctx context.Context, b *bot.Bot, update *mod
 		fmt.Println("Waiting for recipe search")
 	default:
 		app.startHandler(ctx, b, update)
+	}
+}
+
+func (app *application) handleCallbackQuery(ctx context.Context, b *bot.Bot, update *models.Update) {
+	query := update.CallbackQuery.Data
+	chat := update.CallbackQuery.Message.Message.Chat
+
+	parts := strings.Split(query, "_")
+
+	if len(parts) < 3 {
+		b.AnswerCallbackQuery(ctx, &bot.AnswerCallbackQueryParams{
+			CallbackQueryID: update.CallbackQuery.ID,
+			ShowAlert:       true,
+			Text:            messages.InvalidCallback,
+		})
+		return
+	}
+
+	action := parts[0] + "_" + parts[1]
+
+	switch action {
+	case "delete_diet-preference":
+		app.handleDeleteDietPreference(ctx, b, update)
+	case "add_diet-preference":
+		newUpdate := &models.Update{
+			Message: &models.Message{
+				Chat: chat,
+			},
+		}
+		b.AnswerCallbackQuery(ctx, &bot.AnswerCallbackQueryParams{
+			CallbackQueryID: update.CallbackQuery.ID,
+		})
+		app.setWaitingForDietPreference(ctx, b, newUpdate)
 	}
 }

@@ -34,7 +34,7 @@ func (r *DietPreferenceRepository) Save(preference *DietPreference) (*DietPrefer
 	return preference, err
 }
 
-func (r *DietPreferenceRepository) Remove(id int) error {
+func (r *DietPreferenceRepository) Remove(id string) error {
 	err := r.db.Delete(&DietPreference{}, "id", id).Error
 	return err
 }

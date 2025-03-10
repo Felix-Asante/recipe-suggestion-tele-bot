@@ -16,7 +16,7 @@ type Repositories struct {
 	BotState interface {
 		FindByChatId(chatId int64) (*BotState, error)
 		Create(data dto.CreateBotStateDto) (*BotState, error)
-		Upsert(data dto.CreateBotStateDto) (*BotState, error)
+		Upsert(data dto.CreateBotStateDto) error
 		Save(state *BotState) (*BotState, error)
 		RemoveByChatId(chatId int64) error
 		Remove(id int) error
@@ -25,7 +25,7 @@ type Repositories struct {
 		FindByUserId(userId int64) ([]DietPreference, error)
 		Create(data []*DietPreference) error
 		Save(preference *DietPreference) (*DietPreference, error)
-		Remove(id int) error
+		Remove(id string) error
 		RemoveByUserId(userId int64) error
 	}
 }

@@ -60,3 +60,9 @@ However, we noticed a few options that were invalid (%s) and couldn't be saved. 
 Feel free to update them anytime! 😊  `
 
 const InvalidDietaryPreference = `We noticed a few options that were invalid (%s) and couldn't be saved. 🚫  `
+
+const InvalidCallback = `Invalid callback data`
+
+const FailedToGetResponse = `Failed to get response`
+
+const DietaryPreferenceDeleted = `Dietary preference deleted successfully!`
