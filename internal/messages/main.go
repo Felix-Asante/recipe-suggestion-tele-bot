@@ -1,5 +1,7 @@
 package messages
 
+// - /pantry - Manage your saved ingredient list
+
 const WelcomeText = `* 🍳 Welcome to RecipePal! 🥗*
 
 Hello %s! I'm RecipePal, your personal recipe assistant built to turn your available ingredients into delicious meals. No more staring at your fridge wondering what to cook!
@@ -18,7 +20,6 @@ Here are some commands to help you navigate:
 
 - /start - Show this welcome message
 - /findrecipe - Search recipes with your ingredients
-- /pantry - Manage your saved ingredient list
 - /diet - Set dietary preferences (vegetarian, gluten-free, etc.)
 - /mealplan - Generate a weekly meal plan
 - /help - Get detailed instructions

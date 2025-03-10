@@ -82,10 +82,10 @@ func setCommands(ctx context.Context, b *bot.Bot) (bool, error) {
 				Command:     "/findrecipe",
 				Description: "Search recipes with your ingredients",
 			},
-			{
-				Command:     "/pantry",
-				Description: "Manage your saved ingredient list",
-			},
+			// {
+			// 	Command:     "/pantry",
+			// 	Description: "Manage your saved ingredient list",
+			// },
 			{
 				Command:     "/diet",
 				Description: "Set dietary preferences",
