@@ -67,3 +67,20 @@ const InvalidCallback = `Invalid callback data`
 const FailedToGetResponse = `Failed to get response`
 
 const DietaryPreferenceDeleted = `Dietary preference deleted successfully!`
+
+const FindRecipes = `🎉 **Let's Cook Something Delicious!** 🥢
+
+We're excited 🌟 to help you whip up something amazing in the kitchen. 🍳
+
+Please list the ingredients you have right now, and we'll generate a fantastic recipe just for you! 🥩
+
+📝 *How to list your ingredients:*
+- Separate each ingredient with a comma.
+- Include quantities if you can (e.g., 2 eggs, 1 cup flour).
+- Don't worry about being too precise; we'll do our best to match your ingredients to a great recipe! 🥩
+
+Example: 2 eggs, 1 cup flour, 1/2 cup milk, 1 tsp sugar
+
+Ready? Send us your ingredients, and let's get cooking! 🥩
+
+`

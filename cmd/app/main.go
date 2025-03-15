@@ -44,6 +44,7 @@ func main() {
 	var appErr error
 
 	app, appErr = createApp(b)
+
 	if nil != appErr {
 		log.Fatal(appErr)
 	}

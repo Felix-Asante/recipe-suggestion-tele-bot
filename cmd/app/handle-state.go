@@ -41,7 +41,7 @@ func (app *application) handleState(ctx context.Context, b *bot.Bot, update *mod
 	case botStates.WaitingForMealPlan:
 		fmt.Println("Waiting for meal plan")
 	case botStates.WaitingForRecipeSearch:
-		fmt.Println("Waiting for recipe search")
+		app.handleRecipeSearch(ctx, b, update)
 	default:
 		app.startHandler(ctx, b, update)
 	}
