@@ -28,6 +28,15 @@ type Repositories struct {
 		Remove(id string) error
 		RemoveByUserId(userId int64) error
 	}
+	SavedRecipe interface {
+		FindByUserId(userId int64) ([]SavedRecipe, error)
+		Create(data []*SavedRecipe) error
+		Save(recipe *SavedRecipe) (*SavedRecipe, error)
+		Remove(id string) error
+		RemoveByPhoto(photo string) error
+		RemoveByUserId(userId int64) error
+		Upsert(data dto.CreateSavedRecipeDto) error
+	}
 }
 
 func NewRepositories(db *gorm.DB) *Repositories {
@@ -35,5 +44,6 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		User:           NewUserRepository(db),
 		BotState:       NewBotStateRepository(db),
 		DietPreference: NewDietPreferenceRepository(db),
+		SavedRecipe:    NewSavedRecipeRepository(db),
 	}
 }

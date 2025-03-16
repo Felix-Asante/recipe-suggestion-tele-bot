@@ -13,7 +13,14 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := db.AutoMigrate(&repositories.User{}, &repositories.BotState{}, &repositories.DietPreference{}); err != nil {
+	models := []interface{}{
+		&repositories.User{},
+		&repositories.BotState{},
+		&repositories.DietPreference{},
+		&repositories.SavedRecipe{},
+	}
+
+	if err := db.AutoMigrate(models...); err != nil {
 		log.Fatal(err)
 	}
 }

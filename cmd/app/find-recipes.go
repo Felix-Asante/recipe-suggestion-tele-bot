@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"strconv"
 	"sync"
 
 	"strings"
@@ -72,10 +71,6 @@ func (app *application) handleRecipeSearch(ctx context.Context, b *bot.Bot, upda
 	ingredients := update.Message.Text
 	userId := update.Message.From.ID
 
-	var wg sync.WaitGroup
-
-	slidesChannel := make(chan []slider.Slide)
-
 	dietPreferences, err := app.repositories.DietPreference.FindByUserId(userId)
 	if nil != err {
 		b.SendMessage(ctx, &bot.SendMessageParams{
@@ -104,6 +99,10 @@ func (app *application) handleRecipeSearch(ctx context.Context, b *bot.Bot, upda
 		return
 	}
 
+	var wg sync.WaitGroup
+
+	slidesChannel := make(chan []slider.Slide)
+
 	go func() {
 		for _, recipe := range aiResponse {
 			wg.Add(1)
@@ -123,27 +122,31 @@ func (app *application) handleRecipeSearch(ctx context.Context, b *bot.Bot, upda
 	}
 
 	opts := []slider.Option{
-		slider.OnSelect("❤️ Save", false, sliderOnSelect),
+		slider.OnSelect("❤️ Save", false, app.sliderOnSelect),
 	}
 
 	sl := slider.New(b, slides, opts...)
 
 	_, err = sl.Show(ctx, b, update.Message.Chat.ID)
 	if nil != err {
-		fmt.Println("error showing slider")
-		fmt.Println(err)
-		// b.SendMessage(ctx, &bot.SendMessageParams{
-		// 	ChatID:    update.Message.Chat.ID,
-		// 	Text:      messages.SomethingWentWrong,
-		// 	ParseMode: models.ParseModeMarkdownV1,
-		// })
+		b.SendMessage(ctx, &bot.SendMessageParams{
+			ChatID:    update.Message.Chat.ID,
+			Text:      messages.SomethingWentWrong,
+			ParseMode: models.ParseModeMarkdownV1,
+		})
 		return
 	}
 }
 
 func generateSlides(recipe structs.Recipe, slidesChannel chan []slider.Slide) {
 	photo, err := ai.GeneratePhotos(recipe.Title)
-	recipeContent := formatRecipeContent(recipe)
+	recipeContent := fmt.Sprintf("%s\n\n%s\n\n%s\n\n%s",
+		recipe.Title,
+		recipe.Ingredients,
+		recipe.Instructions,
+		recipe.DietaryCompliance)
+	recipeContent = formatRecipeContent(recipeContent)
+
 	if nil != err {
 		fmt.Println("error generating photos")
 		fmt.Println(err)
@@ -157,12 +160,7 @@ func generateSlides(recipe structs.Recipe, slidesChannel chan []slider.Slide) {
 	slidesChannel <- []slider.Slide{slide}
 }
 
-func formatRecipeContent(recipe structs.Recipe) string {
-	content := fmt.Sprintf("%s\n\n%s\n\n%s\n\n%s",
-		recipe.Title,
-		recipe.Ingredients,
-		recipe.Instructions,
-		recipe.DietaryCompliance)
+func formatRecipeContent(content string) string {
 
 	specialChars := []string{
 		"-", "_", "*", "[", "]", "(", ")", "~", "`", ">",
@@ -176,16 +174,29 @@ func formatRecipeContent(recipe structs.Recipe) string {
 	return content
 }
 
-func sliderOnSelect(ctx context.Context, b *bot.Bot, message models.MaybeInaccessibleMessage, item int) {
+func (app *application) sliderOnSelect(ctx context.Context, b *bot.Bot, message models.MaybeInaccessibleMessage, item int) {
 	userId := message.Message.Chat.ID
-	fmt.Println("Selected item:", userId)
+	data := dto.CreateSavedRecipeDto{
+		MessageId: message.Message.ID + item,
+		Photo:     message.Message.Photo[0].FileID,
+		Caption:   message.Message.Caption,
+		UserId:    userId,
+	}
+	if err := app.repositories.SavedRecipe.Upsert(data); nil != err {
+		b.SendMessage(ctx, &bot.SendMessageParams{
+			ChatID:    message.Message.Chat.ID,
+			Text:      messages.SomethingWentWrong,
+			ParseMode: models.ParseModeMarkdownV1,
+		})
+		return
+	}
 	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: message.Message.Chat.ID,
-		Text:   "Select " + strconv.Itoa(item),
+		Text:   "Saved",
 	})
 }
 
-func sliderOnCancel(ctx context.Context, b *bot.Bot, message models.MaybeInaccessibleMessage) {
+func (app *application) sliderOnCancel(ctx context.Context, b *bot.Bot, message models.MaybeInaccessibleMessage) {
 	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: message.Message.Chat.ID,
 		Text:   "Cancel",

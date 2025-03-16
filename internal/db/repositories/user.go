@@ -18,6 +18,7 @@ type User struct {
 	UpdatedAt *time.Time `gorm:"column:updated_at;not null" json:"updated_at"`
 
 	DietPreferences []DietPreference `gorm:"foreignKey:UserId;references:UserId"`
+	SavedRecipes    []SavedRecipe    `gorm:"foreignKey:UserId;references:UserId"`
 }
 
 type UserRepository struct {

@@ -80,21 +80,21 @@ func setCommands(ctx context.Context, b *bot.Bot) (bool, error) {
 				Description: "Show welcome message",
 			},
 			{
-				Command:     "/findrecipe",
+				Command:     "/find",
 				Description: "Search recipes with your ingredients",
 			},
-			// {
-			// 	Command:     "/pantry",
-			// 	Description: "Manage your saved ingredient list",
-			// },
+			{
+				Command:     "/saved",
+				Description: "Show saved recipes",
+			},
 			{
 				Command:     "/diet",
 				Description: "Set dietary preferences",
 			},
-			{
-				Command:     "/mealplan",
-				Description: "Generate a weekly meal plan",
-			},
+			// {
+			// 	Command:     "/mealplan",
+			// 	Description: "Generate a weekly meal plan",
+			// },
 			{
 				Command:     "/help",
 				Description: "Get detailed instructions",

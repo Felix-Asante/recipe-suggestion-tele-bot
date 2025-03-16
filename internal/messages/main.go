@@ -1,6 +1,8 @@
 package messages
 
 // - /pantry - Manage your saved ingredient list
+// - /mealplan - Generate a weekly meal plan
+// - /mealplan - Generate a weekly meal plan
 
 const WelcomeText = `* 🍳 Welcome to RecipePal! 🥗*
 
@@ -19,9 +21,8 @@ Hello %s! I'm RecipePal, your personal recipe assistant built to turn your avail
 Here are some commands to help you navigate:
 
 - /start - Show this welcome message
-- /findrecipe - Search recipes with your ingredients
+- /find - Search recipes with your ingredients
 - /diet - Set dietary preferences (vegetarian, gluten-free, etc.)
-- /mealplan - Generate a weekly meal plan
 - /help - Get detailed instructions
 
 * 💡 Quick Tips *
@@ -32,7 +33,7 @@ Here are some commands to help you navigate:
 
 * 📱 Try These Now *
 
-👉 /findrecipe - Create your first recipe search
+👉 /find - Create your first recipe search
 👉 /diet - Set your dietary preferences
 👉 /help - Get more detailed instructions
 
@@ -84,3 +85,34 @@ Example: 2 eggs, 1 cup flour, 1/2 cup milk, 1 tsp sugar
 Ready? Send us your ingredients, and let's get cooking! 🥩
 
 `
+
+const SavedRecipes = `*Saved Recipes* 🍽️
+
+Here are your saved recipes:
+
+%s
+
+You can delete a recipe by clicking the "Delete" button below.
+
+`
+
+const NoSavedRecipes = `You haven't saved any recipes yet!`
+
+const DeleteRecipe = `Delete Recipe`
+
+const HelpText = `<b>🍳 RecipePal Help Guide 🥗</b>
+
+<b>Basic Commands</b>
+- /start - Display welcome message
+- /find - Search for recipes with your ingredients
+- /diet - Set your dietary preferences
+- /saved - View your saved recipes
+- /help - Show this help page
+
+<b>Need Help?</b>
+If you have questions or feedback:
+
+👨 Developer: @Greatness_25
+📧 Email: webdevwithfelix@gmail.com
+
+Enjoy cooking with RecipePal! Let me know if you need anything else. 🥘`
